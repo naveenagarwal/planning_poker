@@ -5,3 +5,22 @@
 #
 #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
 #   Character.create(name: 'Luke', movie: movies.first)
+
+# create organization
+organization = Organization.create!(name: "Srijan", website: "http://srijan.net")
+# create Project
+project = Project.create!(organization: organization, name: "HCAH")
+# create sprint
+sprint = Sprint.create!(project: project, name: "Sprint 1")
+# create story
+stories = [
+  Story.create!(sprint: sprint, story_no: "HCAH-001", title: "Bootstrap ember", description: "We have to bootstrap the emberjs application"),
+  Story.create!(sprint: sprint, story_no: "HCAH-002", title: "Design planning poker board for UI", description: "Create a UI for planning poker board")
+]
+# create channel
+channel = Channel.create!(name: Time.now.to_f.to_s, sprint: sprint)
+# create users
+["Naveen", "Ashok", "Biswajeet"].each do |name|
+  User.create!(name: name, email: "#{name}@srijan.net", organization: organization)
+end
+

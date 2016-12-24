@@ -1,0 +1,17 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  story_no: MyString
+  title: MyString
+  description: MyText
+  estimated_points: 1
+  estimated_time: MyString
+  references: 
+
+two:
+  story_no: MyString
+  title: MyString
+  description: MyText
+  estimated_points: 1
+  estimated_time: MyString
+  references: 
