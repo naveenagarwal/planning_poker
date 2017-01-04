@@ -38,6 +38,7 @@ ActiveRecord::Schema.define(version: 20161224055119) do
   create_table "sprints", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.string   "name"
     t.integer  "project_id"
+    t.string   "status"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["project_id"], name: "index_sprints_on_project_id", using: :btree
@@ -75,4 +76,3 @@ ActiveRecord::Schema.define(version: 20161224055119) do
     t.index ["organization_id"], name: "index_users_on_organization_id", using: :btree
   end
 
-end

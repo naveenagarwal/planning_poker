@@ -3,14 +3,45 @@ class SprintsController < ApplicationController
 
   # GET /sprints
   def index
-    @sprints = Sprint.all
+    @sprints = Sprint.all.map { |s| {
+        id: s.id,
+        type: "sprint",
+        attributes: {
+          name: s.name,
+          status: s.status,
+          "project-id" => s.project_id,
+          "created-at" => s.created_at,
+          "updated-at" => s.updated_at
+        }
+      }
+    }
 
-    render json: @sprints
+    render json: {data: @sprints}
   end
 
   # GET /sprints/1
   def show
-    render json: @sprint
+    data = {
+      data: {
+        id: @sprint.id,
+        type: "sprint",
+        attributes: {
+          name: @sprint.name,
+          status: @sprint.status,
+          "project-id" => @sprint.project_id,
+          "created-at" => @sprint.created_at,
+          "updated-at" => @sprint.updated_at
+        },
+        relationships: {
+          stories: {
+            data: @sprint.stories.map { |s| { type: "stories", id: s.id} }
+          }
+        }
+      },
+      included: @sprint.stories.map { |s| { type: "stories", id: s.id, attributes: { title: s.title, description: s.description } } }
+    }
+
+    render json: data
   end
 
   # POST /sprints
