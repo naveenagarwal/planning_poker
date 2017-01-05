@@ -11,7 +11,7 @@ class SprintsController < ApplicationController
           status: s.status,
           "project-id" => s.project_id,
           "created-at" => s.created_at,
-          "updated-at" => s.updated_at
+          "updated-at" => s.updated_at,
         }
       }
     }
@@ -38,7 +38,7 @@ class SprintsController < ApplicationController
           }
         }
       },
-      included: @sprint.stories.map { |s| { type: "stories", id: s.id, attributes: { title: s.title, description: s.description } } }
+      included: @sprint.stories.map { |s| { type: "stories", id: s.id, attributes: { title: s.title, "story-no": s.story_no } } }
     }
 
     render json: data

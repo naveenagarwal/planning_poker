@@ -10,7 +10,46 @@ class StoriesController < ApplicationController
 
   # GET /stories/1
   def show
-    render json: @story
+    data = {
+      data: {
+        id: @story.id,
+        type: "story",
+        attributes: {
+          title: @story.title,
+          description: @story.description,
+          "story-no" => @story.story_no,
+          "sprint-id" => @story.sprint_id,
+          "estimated-points" => @story.estimated_points,
+          "estimated-time" => @story.estimated_time,
+          "created-at" => @story.created_at,
+          "updated-at" => @story.updated_at
+        },
+        relationships: {
+          story_points: {
+            data: @story.story_points.map { |s| { type: "story_points", id: s.id} }
+          },
+          sprint: {
+            data: { id: @story.sprint_id, type: "sprint" }
+          }
+        }
+      },
+      included: @story.story_points.map { |s|
+        {
+          type: "story_points",
+          id: s.id,
+          attributes: {
+            "estimated-points" => s.estimated_points,
+            "estimated-time" => s.estimated_time
+          },
+          relationships: {
+            user: {
+              data: { type: "user", id: s.user.id }
+            }
+          }
+        }
+      }
+    }
+    render json: data
   end
 
   # POST /stories
