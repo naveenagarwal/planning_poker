@@ -10,7 +10,24 @@ class UsersController < ApplicationController
 
   # GET /users/1
   def show
-    render json: @user
+    data = {
+      data: {
+        id: @user.id,
+        type: "user",
+        attributes: {
+          name: @user.name,
+          email: @user.email,
+          "created-at" => @user.created_at,
+          "updated-at" => @user.updated_at
+        },
+        relationships: {
+          story_points: {
+            data: []
+          }
+        }
+      }
+    }
+    render json: data
   end
 
   # POST /users

@@ -161,6 +161,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  active_model_serializers
   byebug
   ember-rails
   listen (~> 3.0.5)

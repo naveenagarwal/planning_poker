@@ -14,3 +14,9 @@ Rails.application.config.middleware.insert_before 0, Rack::Cors do
       methods: [:get, :post, :put, :patch, :delete, :options, :head]
   end
 end
+
+ActiveSupport.on_load(:action_controller) do
+  require 'active_model_serializers/register_jsonapi_renderer'
+end
+
+ActiveModelSerializers.config.adapter = :json_api

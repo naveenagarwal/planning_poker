@@ -25,8 +25,8 @@ class StoriesController < ApplicationController
           "updated-at" => @story.updated_at
         },
         relationships: {
-          story_points: {
-            data: @story.story_points.map { |s| { type: "story_points", id: s.id} }
+          "story-points" => {
+            data: @story.story_points.map { |s| { type: "story-points", id: s.id} }
           },
           sprint: {
             data: { id: @story.sprint_id, type: "sprint" }
@@ -35,7 +35,7 @@ class StoriesController < ApplicationController
       },
       included: @story.story_points.map { |s|
         {
-          type: "story_points",
+          type: "story-points",
           id: s.id,
           attributes: {
             "estimated-points" => s.estimated_points,
@@ -43,7 +43,7 @@ class StoriesController < ApplicationController
           },
           relationships: {
             user: {
-              data: { type: "user", id: s.user.id }
+              data: { type: "user", id: s.user.id, attributes: { name: s.user.name, email: s.user.email } }
             }
           }
         }

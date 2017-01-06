@@ -1,5 +1,5 @@
 Rails.application.routes.draw do
-  resources :story_points
+  resources :story_points, :path => '/story-points'
   resources :users
   resources :channels
   resources :stories

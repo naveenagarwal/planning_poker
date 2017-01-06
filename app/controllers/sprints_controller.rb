@@ -37,8 +37,7 @@ class SprintsController < ApplicationController
             data: @sprint.stories.map { |s| { type: "stories", id: s.id} }
           }
         }
-      },
-      included: @sprint.stories.map { |s| { type: "stories", id: s.id, attributes: { title: s.title, "story-no": s.story_no } } }
+      }
     }
 
     render json: data
