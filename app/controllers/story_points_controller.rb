@@ -3,9 +3,54 @@ class StoryPointsController < ApplicationController
 
   # GET /story_points
   def index
-    @story_points = StoryPoint.all
+    story_points = StoryPoint.includes(:user).where(story_id: params[:filter][:story_id]).all
 
-    render json: @story_points
+    result = {
+      data: create_data(story_points)
+    }.merge({
+        included: get_included(story_points)
+      })
+    render json: result
+  end
+
+  def get_included(story_points)
+    story_points.map { |story_point|
+      {
+        type: "user",
+        id: story_point.user.id,
+        attributes: {
+          "name" => story_point.user.name,
+          "email" => story_point.user.email
+        }
+      }
+    }
+  end
+
+  def create_data(story_points)
+    story_points.map { |story_point|
+      {
+        id: story_point.id,
+        type: "story-point",
+        attributes: {
+          "estimated-points" => story_point.estimated_points,
+          "estimated-time" => story_point.estimated_time
+        },
+        relationships: {
+          # story: {
+          #   data: {
+          #     type: "story",
+          #     id: story_point.story_id
+          #   }
+          # },
+          user: {
+            data: {
+              type: "user",
+              id: story_point.user_id
+            }
+          }
+        }
+      }
+    }
   end
 
   # GET /story_points/1
