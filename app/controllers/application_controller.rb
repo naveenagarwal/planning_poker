@@ -15,6 +15,7 @@ class ApplicationController < ActionController::API
   private
 
   def set_headers
+    # sleep 4
     response.headers["Access-Control-Allow-Origin"] = "*"
   end
 end

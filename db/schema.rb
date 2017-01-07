@@ -59,10 +59,12 @@ ActiveRecord::Schema.define(version: 20161224055119) do
   create_table "story_points", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.integer  "user_id"
     t.integer  "story_id"
+    t.integer  "sprint_id"
     t.integer  "estimated_points"
     t.string   "estimated_time"
     t.datetime "created_at",       null: false
     t.datetime "updated_at",       null: false
+    t.index ["sprint_id"], name: "index_story_points_on_sprint_id", using: :btree
     t.index ["story_id"], name: "index_story_points_on_story_id", using: :btree
     t.index ["user_id"], name: "index_story_points_on_user_id", using: :btree
   end

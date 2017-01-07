@@ -3,6 +3,7 @@ class CreateStoryPoints < ActiveRecord::Migration[5.0]
     create_table :story_points do |t|
       t.references :user
       t.references :story
+      t.references :sprint
       t.integer :estimated_points
       t.string :estimated_time
 

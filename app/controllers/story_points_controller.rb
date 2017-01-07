@@ -23,6 +23,9 @@ class StoryPointsController < ApplicationController
       @story_point.send("#{key}_id=", value[:data ][:id])
     end
 
+    story = Story.find(story_point_params[:relationships][:story][:data][:id])
+    @story_point.sprint_id = story.sprint_id
+    # byebug
     if @story_point.save
       data = {
         data: {
@@ -31,6 +34,20 @@ class StoryPointsController < ApplicationController
           attributes: {
             "estimated-points" => @story_point.estimated_points,
             "estimated-time" => @story_point.estimated_time
+          },
+          relationships: {
+            story: {
+              data: {
+                type: "story",
+                id: @story_point.story_id
+              }
+            },
+            user: {
+              data: {
+                type: "user",
+                id: @story_point.user_id
+              }
+            }
           }
         }
       }

@@ -39,11 +39,12 @@ class StoriesController < ApplicationController
           id: s.id,
           attributes: {
             "estimated-points" => s.estimated_points,
-            "estimated-time" => s.estimated_time
+            "estimated-time" => s.estimated_time,
+            "user-id" => s.user_id
           },
           relationships: {
             user: {
-              data: { type: "user", id: s.user.id, attributes: { name: s.user.name, email: s.user.email } }
+              data: { type: "user", id: s.user.id }
             }
           }
         }
