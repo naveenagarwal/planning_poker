@@ -3,9 +3,58 @@ class StoriesController < ApplicationController
 
   # GET /stories
   def index
-    @stories = Story.all
+    stories = Story.includes(:story_points).where(sprint_id: params[:filter][:sprint_id]).all
+    result = {
+      data: stories.map { |s| create_data(s) },
+      included: get_included(stories)
+    }
+    render json: result
+  end
 
-    render json: @stories
+  def create_data(story)
+    {
+      id: story.id,
+      type: "story",
+      attributes: {
+        title: story.title,
+        description: story.description,
+        "story-no" => story.story_no,
+        "sprint-id" => story.sprint_id,
+        "estimated-points" => story.estimated_points,
+        "estimated-time" => story.estimated_time,
+        "created-at" => story.created_at,
+        "updated-at" => story.updated_at
+      },
+      relationships: {
+        "story-points" => {
+          data: story.story_points.map { |s| { type: "story-points", id: s.id} }
+        },
+        sprint: {
+          data: { id: story.sprint_id, type: "sprint" }
+        }
+      }
+    }
+  end
+
+  def get_included(stories)
+    stories.flat_map do |story|
+      story.story_points.map { |s|
+        {
+          type: "story-points",
+          id: s.id,
+          attributes: {
+            "estimated-points" => s.estimated_points,
+            "estimated-time" => s.estimated_time,
+            "user-id" => s.user_id
+          },
+          relationships: {
+            user: {
+              data: { type: "user", id: s.user.id }
+            }
+          }
+        }
+      }
+    end
   end
 
   # GET /stories/1
