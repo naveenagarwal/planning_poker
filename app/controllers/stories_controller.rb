@@ -19,6 +19,7 @@ class StoriesController < ApplicationController
         title: story.title,
         description: story.description,
         "story-no" => story.story_no,
+        "reveal-points" => story.reveal_points,
         "sprint-id" => story.sprint_id,
         "estimated-points" => story.estimated_points,
         "estimated-time" => story.estimated_time,
@@ -59,47 +60,12 @@ class StoriesController < ApplicationController
 
   # GET /stories/1
   def show
-    data = {
-      data: {
-        id: @story.id,
-        type: "story",
-        attributes: {
-          title: @story.title,
-          description: @story.description,
-          "story-no" => @story.story_no,
-          "sprint-id" => @story.sprint_id,
-          "estimated-points" => @story.estimated_points,
-          "estimated-time" => @story.estimated_time,
-          "created-at" => @story.created_at,
-          "updated-at" => @story.updated_at
-        },
-        relationships: {
-          "story-points" => {
-            data: @story.story_points.map { |s| { type: "story-points", id: s.id} }
-          },
-          sprint: {
-            data: { id: @story.sprint_id, type: "sprint" }
-          }
-        }
-      },
-      included: @story.story_points.map { |s|
-        {
-          type: "story-points",
-          id: s.id,
-          attributes: {
-            "estimated-points" => s.estimated_points,
-            "estimated-time" => s.estimated_time,
-            "user-id" => s.user_id
-          },
-          relationships: {
-            user: {
-              data: { type: "user", id: s.user.id }
-            }
-          }
-        }
-      }
+    result = {
+      data: create_data(@story),
+      included: get_included([@story])
     }
-    render json: data
+
+    render json: result
   end
 
   # POST /stories
@@ -115,8 +81,12 @@ class StoriesController < ApplicationController
 
   # PATCH/PUT /stories/1
   def update
-    if @story.update(story_params)
-      render json: @story
+    if @story.update(story_params[:attributes])
+      result = {
+        data: create_data(@story),
+        included: get_included([@story])
+      }
+      render json: result
     else
       render json: @story.errors, status: :unprocessable_entity
     end
@@ -135,6 +105,7 @@ class StoriesController < ApplicationController
 
     # Only allow a trusted parameter "white list" through.
     def story_params
-      params.require(:story).permit(:story_no, :title, :description, :estimated_points, :estimated_time, :references)
+      # params.require(:story).permit(:story_no, :title, :description, :estimated_points, :estimated_time, :references)
+      params.require(:data).permit!
     end
 end

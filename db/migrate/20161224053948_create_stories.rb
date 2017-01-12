@@ -4,6 +4,7 @@ class CreateStories < ActiveRecord::Migration[5.0]
       t.string :story_no
       t.string :title
       t.text :description
+      t.boolean :reveal_points, default: false
       t.integer :estimated_points
       t.string :estimated_time
       t.references :sprint

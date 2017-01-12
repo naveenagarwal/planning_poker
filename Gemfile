@@ -24,7 +24,7 @@ gem 'puma', '~> 3.0'
 
 # Use Rack CORS for handling Cross-Origin Resource Sharing (CORS), making cross-origin AJAX possible
 gem 'rack-cors'
-gem 'ember-rails'
+# gem 'ember-rails'
 gem "active_model_serializers"
 
 group :development, :test do

@@ -48,11 +48,12 @@ ActiveRecord::Schema.define(version: 20161224055119) do
     t.string   "story_no"
     t.string   "title"
     t.text     "description",      limit: 65535
+    t.boolean  "reveal_points",                  default: false
     t.integer  "estimated_points"
     t.string   "estimated_time"
     t.integer  "sprint_id"
-    t.datetime "created_at",                     null: false
-    t.datetime "updated_at",                     null: false
+    t.datetime "created_at",                                     null: false
+    t.datetime "updated_at",                                     null: false
     t.index ["sprint_id"], name: "index_stories_on_sprint_id", using: :btree
   end
 
