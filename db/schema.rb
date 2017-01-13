@@ -73,9 +73,11 @@ ActiveRecord::Schema.define(version: 20161224055119) do
   create_table "users", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.string   "name"
     t.string   "email"
+    t.string   "role"
     t.integer  "organization_id"
     t.datetime "created_at",      null: false
     t.datetime "updated_at",      null: false
     t.index ["organization_id"], name: "index_users_on_organization_id", using: :btree
   end
 
+end

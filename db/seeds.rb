@@ -20,7 +20,7 @@ stories = [
 # create channel
 channel = Channel.create!(name: Time.now.to_f.to_s, sprint: sprint)
 # create users
-["Naveen", "Ashok", "Biswajeet"].each do |name|
-  User.create!(name: name, email: "#{name}@srijan.net", organization: organization)
+[["Admin", "admin"], ["Naveen", "organizer"], ["Ashok", "participant"], ["Biswajeet", "participant"]].each do |name_role|
+  User.create!(name: name_role[0], email: "#{name_role[0]}@srijan.net", role: name_role[1], organization: organization)
 end
 
