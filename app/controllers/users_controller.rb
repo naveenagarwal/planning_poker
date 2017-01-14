@@ -70,7 +70,7 @@ class UsersController < ApplicationController
         attributes: {
           name: @user.name,
           email: @user.email,
-          role: user.role,
+          role: @user.role,
           "created-at" => @user.created_at,
           "updated-at" => @user.updated_at
         },
