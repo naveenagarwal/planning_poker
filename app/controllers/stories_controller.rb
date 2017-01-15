@@ -5,8 +5,8 @@ class StoriesController < ApplicationController
   def index
     stories = Story.includes(:story_points).where(sprint_id: params[:filter][:sprint_id]).all
     result = {
-      data: stories.map { |s| create_data(s) },
-      included: get_included(stories)
+      data: stories.map { |s| create_data(s) }
+      # included: get_included(stories)
     }
     render json: result
   end

@@ -10,7 +10,44 @@ class OrganizationsController < ApplicationController
 
   # GET /organizations/1
   def show
-    render json: @organization
+    result = {
+      data: create_data(@organization),
+      included: get_included(@organization)
+    }
+    render json: result
+  end
+
+  def get_included(org)
+    org.projects.map { |p|
+      {
+        type: "projects",
+        id: p.id,
+        attributes: {
+          name => p.name
+        }
+      }
+    }
+  end
+
+  def create_data(org)
+    data = {
+      id: org.id,
+      type: "organization",
+      attributes: {
+        name: org.name,
+        email: org.website
+      }
+    }
+
+    data.merge!({
+      relationships: {
+        "projects" => {
+          data: org.projects.map { |p| { id: p.id, type: "projects" }  }
+        }
+      }
+    })
+
+    data
   end
 
   # POST /organizations
@@ -41,7 +78,7 @@ class OrganizationsController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_organization
-      @organization = Organization.find(params[:id])
+      @organization = Organization.includes(:projects).find(params[:id])
     end
 
     # Only allow a trusted parameter "white list" through.

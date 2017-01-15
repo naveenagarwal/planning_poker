@@ -21,26 +21,46 @@ class SprintsController < ApplicationController
 
   # GET /sprints/1
   def show
-    data = {
-      data: {
-        id: @sprint.id,
-        type: "sprint",
-        attributes: {
-          name: @sprint.name,
-          status: @sprint.status,
-          "project-id" => @sprint.project_id,
-          "created-at" => @sprint.created_at,
-          "updated-at" => @sprint.updated_at
-        },
-        relationships: {
-          stories: {
-            data: @sprint.stories.map { |s| { type: "stories", id: s.id} }
+    result = {
+      data: create_data(@sprint),
+      included: get_included([@sprint])
+    }
+
+    render json: result
+  end
+
+  def get_included(sprints)
+    sprints.flat_map { |sprint|
+      sprint.stories.map { |s|
+        {
+          id: s.id,
+          type: "stories",
+          attributes: {
+            "story-no" => s.story_no,
+            title: s.title,
+            description: s.description
           }
         }
       }
     }
+  end
 
-    render json: data
+  def create_data(sprint)
+    data = {
+      id: sprint.id,
+      type: "sprint",
+      attributes: {
+        name: sprint.name,
+        status: sprint.status,
+        "created-at" => sprint.created_at,
+        "updated-at" => sprint.updated_at
+      },
+      relationships: {
+        stories: {
+          data: @sprint.stories.map { |s| { type: "stories", id: s.id} }
+        }
+      }
+    }
   end
 
   # POST /sprints
@@ -71,7 +91,7 @@ class SprintsController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_sprint
-      @sprint = Sprint.find(params[:id])
+      @sprint = Sprint.includes(:stories).find(params[:id])
     end
 
     # Only allow a trusted parameter "white list" through.

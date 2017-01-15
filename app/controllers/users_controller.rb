@@ -3,20 +3,18 @@ class UsersController < ApplicationController
 
   # GET /users
   def index
-    relationships = params[:filter].delete(:relationships) == "true"
     single_record = params[:filter].delete(:single_record) == "true"
-    users = User.where(id: params[:filter][:id]).all
+    users = User.includes(:organization, :story_points).where(id: params[:filter][:id]).all
 
     if single_record
       user = users.first
-      data = create_data(user, relationships)
+      data = create_data(user)
       result = { data: data }
-
-      if relationships
-        result[:included] = get_included(user)
-      end
+      result[:included] = get_included(user)
     else
-      data = users.map { |u| create_data(u, false) }
+      data = users.map { |u| create_data(u) }
+      result = { data: data }
+      result[:included] = users.flat_map { |u| get_included(u) }
     end
 
 
@@ -24,7 +22,7 @@ class UsersController < ApplicationController
   end
 
   def get_included(user)
-    user.story_points.where(sprint_id: params[:filter][:sprint_id]).map { |s|
+    story_points = user.story_points.where(sprint_id: params[:filter][:sprint_id]).map { |s|
       {
         type: "story-points",
         id: s.id,
@@ -34,9 +32,20 @@ class UsersController < ApplicationController
         }
       }
     }
+
+    organization = user.organization
+    organization = {
+      type: "organization",
+      id: organization.id,
+      attributes: {
+        name: organization.name,
+        website: organization.website
+      }
+    }
+    story_points << organization
   end
 
-  def create_data(user, relationships)
+  def create_data(user)
     data = {
       id: user.id,
       type: "user",
@@ -49,15 +58,17 @@ class UsersController < ApplicationController
       }
     }
 
-    if relationships
-      data.merge!({
-        relationships: {
-          "story-points" => {
-            data: user.story_points.map { |s| { id: s.id, type: "story-points" }  }
-          }
+    data.merge!({
+      relationships: {
+        "story-points" => {
+          data: user.story_points.map { |s| { id: s.id, type: "story-points" }  }
+        },
+        organization: {
+          data: { id: user.organization.id, type: "organization" }
         }
-      })
-    end
+      }
+    })
+
     data
   end
 

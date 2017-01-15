@@ -3,9 +3,44 @@ class ProjectsController < ApplicationController
 
   # GET /projects
   def index
-    @projects = Project.all
+    @projects = Project.includes(:sprints).all
 
-    render json: @projects
+    result = {
+      data: @projects.map { |p| create_data(p) },
+      included: get_included(@projects)
+    }
+
+    render json: result
+  end
+
+  def create_data(project)
+    {
+      id: project.id,
+      type: "project",
+      attributes: {
+        name: project.name
+      },
+      relationships: {
+        sprints: {
+          data: project.sprints.map { |s| { id: s.id, type: 'sprint' } }
+        }
+      }
+    }
+  end
+
+  def get_included(projects)
+    projects.flat_map { |p|
+      p.sprints.map { |s|
+          {
+            id: s.id,
+            type: "sprint",
+            attributes: {
+              name: s.name,
+              status: s.status
+            }
+          }
+      }
+    }
   end
 
   # GET /projects/1
