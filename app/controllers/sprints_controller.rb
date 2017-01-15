@@ -65,10 +65,19 @@ class SprintsController < ApplicationController
 
   # POST /sprints
   def create
-    @sprint = Sprint.new(sprint_params)
+    # byebug
+    @sprint = Sprint.new(sprint_params[:attributes])
+
+    sprint_params[:relationships].each do |key, value|
+      @sprint.send("#{key}_id=", value[:data ][:id])
+    end
 
     if @sprint.save
-      render json: @sprint, status: :created, location: @sprint
+      result = {
+        data: create_data(@sprint),
+        included: get_included([@sprint])
+      }
+      render json: result
     else
       render json: @sprint.errors, status: :unprocessable_entity
     end
@@ -96,6 +105,6 @@ class SprintsController < ApplicationController
 
     # Only allow a trusted parameter "white list" through.
     def sprint_params
-      params.require(:sprint).permit(:name, :references)
+      params.require(:data).permit!
     end
 end
