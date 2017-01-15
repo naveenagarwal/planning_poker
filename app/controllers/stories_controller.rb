@@ -70,10 +70,18 @@ class StoriesController < ApplicationController
 
   # POST /stories
   def create
-    @story = Story.new(story_params)
+    @story = Story.new(story_params[:attributes])
+
+    story_params[:relationships].each do |key, value|
+      @story.send("#{key}_id=", value[:data ][:id])
+    end
 
     if @story.save
-      render json: @story, status: :created, location: @story
+      result = {
+        data: create_data(@story),
+        included: get_included([@story])
+      }
+      render json: result
     else
       render json: @story.errors, status: :unprocessable_entity
     end
