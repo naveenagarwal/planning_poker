@@ -93,6 +93,7 @@ class StoriesController < ApplicationController
 
   # PATCH/PUT /stories/1
   def update
+    story_params[:attributes].delete(:fetch_from_jira)
     if @story.update(story_params[:attributes])
       result = {
         data: create_data(@story),

@@ -72,32 +72,31 @@ class StoryPointsController < ApplicationController
     @story_point.sprint_id = story.sprint_id
     # byebug
     if @story_point.save
-      data = {
-        data: {
-          id: @story_point.id,
-          type: "story-point",
-          attributes: {
-            "estimated-points" => @story_point.estimated_points,
-            "estimated-time" => @story_point.estimated_time
-          },
-          relationships: {
-            story: {
-              data: {
-                type: "story",
-                id: @story_point.story_id
-              }
-            },
-            user: {
-              data: {
-                type: "user",
-                id: @story_point.user_id
-              }
-            }
-          }
-        }
+      # data = {
+      #   data: {
+      #     id: @story_point.id,
+      #     type: "story-point",
+      #     attributes: {
+      #       "estimated-points" => @story_point.estimated_points,
+      #       "estimated-time" => @story_point.estimated_time
+      #     },
+      #     relationships: {
+      #       user: {
+      #         data: {
+      #           type: "user",
+      #           id: @story_point.user_id
+      #         }
+      #       }
+      #     }
+      #   }
+      # }
+      result = {
+        data: create_data([@story_point]).first,
+        included: get_included([@story_point]).first
       }
+
       # render json: @story_point, status: :created, location: @story_point
-      render json: data
+      render json: result
     else
       render json: @story_point.errors, status: :unprocessable_entity
     end
