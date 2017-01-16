@@ -17,4 +17,18 @@ class ApplicationController < ActionController::API
   def set_headers
     response.headers["Access-Control-Allow-Origin"] = "*"
   end
+
+  def jira_options
+    @jira_options = {
+      :username     => ENV['JIRA_USERNAME'],
+      :password     => ENV['JIRA_PASSWORD'],
+      :site         => 'http://srijan.atlassian.net:443/',
+      :context_path => '',
+      :auth_type    => :basic
+    }
+  end
+
+  def jira_client
+    @jira_client ||= JIRA::Client.new(jira_options)
+  end
 end

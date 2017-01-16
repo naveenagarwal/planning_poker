@@ -73,6 +73,7 @@ class SprintsController < ApplicationController
     end
 
     if @sprint.save
+      add_sprint_stories_from_jira(@sprint)
       result = {
         data: create_data(@sprint),
         included: get_included([@sprint])
@@ -106,5 +107,17 @@ class SprintsController < ApplicationController
     # Only allow a trusted parameter "white list" through.
     def sprint_params
       params.require(:data).permit!
+    end
+
+    def add_sprint_stories_from_jira(sprint)
+      begin
+        issues = jira_client.Issue.jql("project in ('#{sprint.project.name}') AND sprint = '#{sprint.name}'")
+        issues.each do |issue|
+          sprint.stories.create(story_no: issue.key, title: issue.summary, description: issue.description)
+        end
+      rescue Exception => e
+        Rails.logger.error(e.message)
+        Rails.logger.error(e.backtrace)
+      end
     end
 end

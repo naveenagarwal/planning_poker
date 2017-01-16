@@ -30,15 +30,15 @@ class ProjectsController < ApplicationController
 
   def get_included(projects)
     projects.flat_map { |p|
-      p.sprints.map { |s|
-          {
-            id: s.id,
-            type: "sprint",
-            attributes: {
-              name: s.name,
-              status: s.status
-            }
+      p.sprints.includes(:stories).map { |s|
+        {
+          id: s.id,
+          type: "sprint",
+          attributes: {
+            name: s.name,
+            status: s.status
           }
+        }
       }
     }
   end
@@ -50,10 +50,17 @@ class ProjectsController < ApplicationController
 
   # POST /projects
   def create
-    @project = Project.new(project_params)
+    @project = Project.new(project_params[:attributes])
+
+    project_params[:relationships].each do |key, value|
+      @project.send("#{key}_id=", value[:data ][:id])
+    end
 
     if @project.save
-      render json: @project, status: :created, location: @project
+      result = {
+        data: create_data(@project)
+      }
+      render json: result
     else
       render json: @project.errors, status: :unprocessable_entity
     end
@@ -81,6 +88,6 @@ class ProjectsController < ApplicationController
 
     # Only allow a trusted parameter "white list" through.
     def project_params
-      params.require(:project).permit(:name, :references)
+      params.require(:data).permit!
     end
 end

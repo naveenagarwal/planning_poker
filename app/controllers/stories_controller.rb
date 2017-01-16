@@ -5,8 +5,8 @@ class StoriesController < ApplicationController
   def index
     stories = Story.includes(:story_points).where(sprint_id: params[:filter][:sprint_id]).all
     result = {
-      data: stories.map { |s| create_data(s) }
-      # included: get_included(stories)
+      data: stories.map { |s| create_data(s) },
+      included: get_included(stories)
     }
     render json: result
   end
@@ -49,9 +49,7 @@ class StoriesController < ApplicationController
             "user-id" => s.user_id
           },
           relationships: {
-            user: {
-              data: { type: "user", id: s.user.id }
-            }
+            user: { id: s.user.id, type: "user" }
           }
         }
       }
@@ -70,7 +68,13 @@ class StoriesController < ApplicationController
 
   # POST /stories
   def create
-    @story = Story.new(story_params[:attributes])
+    fetch_from_jira = story_params[:attributes].delete(:fetch_from_jira)
+
+    if fetch_from_jira
+      get_story_from_jira(story_params[:attributes][:story_no])
+    else
+      @story = Story.new(story_params[:attributes])
+    end
 
     story_params[:relationships].each do |key, value|
       @story.send("#{key}_id=", value[:data ][:id])
@@ -115,5 +119,17 @@ class StoriesController < ApplicationController
     def story_params
       # params.require(:story).permit(:story_no, :title, :description, :estimated_points, :estimated_time, :references)
       params.require(:data).permit!
+    end
+
+    def get_story_from_jira(story_no)
+      begin
+        issues = jira_client.Issue.jql("key = '#{story_no}'")
+        issues.each do |issue|
+          @story = Story.new(story_no: issue.key, title: issue.summary, description: issue.description)
+        end
+      rescue Exception => e
+        Rails.logger.error(e.message)
+        Rails.logger.error(e.backtrace)
+      end
     end
 end
