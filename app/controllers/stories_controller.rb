@@ -94,7 +94,10 @@ class StoriesController < ApplicationController
   # PATCH/PUT /stories/1
   def update
     story_params[:attributes].delete(:fetch_from_jira)
+    reset = story_params[:attributes].delete(:reset)
+
     if @story.update(story_params[:attributes])
+      @story.story_points.delete_all if reset
       result = {
         data: create_data(@story),
         included: get_included([@story])
