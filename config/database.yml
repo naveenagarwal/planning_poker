@@ -50,5 +50,5 @@ test:
 production:
   <<: *default
   database: planning_poker_production
-  username: planning_poker
-  password: <%= ENV['PLANNING_POKER_DATABASE_PASSWORD'] %>
+  username: root
+  password:
