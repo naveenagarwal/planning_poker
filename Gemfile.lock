@@ -70,6 +70,7 @@ GEM
     mime-types-data (3.2016.0521)
     mini_portile2 (2.1.0)
     minitest (5.10.1)
+    mysql2 (0.4.5)
     nio4r (1.2.1)
     nokogiri (1.7.0.1)
       mini_portile2 (~> 2.1.0)
@@ -135,6 +136,7 @@ DEPENDENCIES
   byebug
   jira-ruby
   listen (~> 3.0.5)
+  mysql2 (>= 0.3.18, < 0.5)
   pg
   puma (~> 3.0)
   rack-cors

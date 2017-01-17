@@ -1,6 +1,11 @@
 Rails.application.routes.draw do
   resources :story_points, :path => '/story-points'
-  resources :users
+  resources :users do
+    member do
+      patch 'add_credentials'
+    end
+  end
+
   resources :channels
   resources :stories
   resources :sprints

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161224055119) do
+ActiveRecord::Schema.define(version: 20170117102751) do
 
   create_table "channels", force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.integer  "sprint_id"
@@ -77,6 +77,9 @@ ActiveRecord::Schema.define(version: 20161224055119) do
     t.integer  "organization_id"
     t.datetime "created_at",      null: false
     t.datetime "updated_at",      null: false
+    t.string   "jira_username"
+    t.string   "jira_password"
+    t.string   "jira_site"
     t.index ["organization_id"], name: "index_users_on_organization_id", using: :btree
   end
 

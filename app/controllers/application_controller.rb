@@ -19,10 +19,12 @@ class ApplicationController < ActionController::API
   end
 
   def jira_options
+    return @jira_options if @jira_options.present?
+    user = User.find(request.headers["HTTP_USER_ID"])
     @jira_options = {
-      :username     => ENV['JIRA_USERNAME'],
-      :password     => ENV['JIRA_PASSWORD'],
-      :site         => 'http://srijan.atlassian.net:443/',
+      :username     => user.jira_username,
+      :password     => user.jira_password,
+      :site         => user.jira_site,
       :context_path => '',
       :auth_type    => :basic
     }

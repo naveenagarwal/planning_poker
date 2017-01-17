@@ -125,6 +125,19 @@ class UsersController < ApplicationController
     end
   end
 
+  # PATCH/PUT
+  def add_credentials
+    result = {}
+    params.require(:jira).permit!
+    user = User.find(params[:id])
+    if user.update(params[:jira])
+      result[:success] = true
+    else
+      result[:success] = false
+    end
+    render json: result
+  end
+
   # DELETE /users/1
   def destroy
     @user.destroy
