@@ -22,16 +22,20 @@ class UsersController < ApplicationController
   end
 
   def get_included(user)
-    story_points = user.story_points.where(sprint_id: params[:filter][:sprint_id]).map { |s|
-      {
-        type: "story-points",
-        id: s.id,
-        attributes: {
-          "estimated-points" => s.estimated_points,
-          "estimated-time" => s.estimated_time
+    if params[:filter]
+      story_points = user.story_points.where(sprint_id: params[:filter][:sprint_id]).map { |s|
+        {
+          type: "story-points",
+          id: s.id,
+          attributes: {
+            "estimated-points" => s.estimated_points,
+            "estimated-time" => s.estimated_time
+          }
         }
       }
-    }
+    else
+      story_points = []
+    end
 
     organization = user.organization
     organization = {
@@ -107,10 +111,17 @@ class UsersController < ApplicationController
 
   # POST /users
   def create
-    @user = User.new(user_params)
+    @user = User.new(user_params[:attributes])
+
+    @user.organization = Organization.first
+    @user.role = "participant"
 
     if @user.save
-      render json: @user, status: :created, location: @user
+      result = {
+        data: create_data(@user),
+        included: get_included(@user)
+      }
+      render json: result
     else
       render json: @user.errors, status: :unprocessable_entity
     end
@@ -151,6 +162,6 @@ class UsersController < ApplicationController
 
     # Only allow a trusted parameter "white list" through.
     def user_params
-      params.require(:user).permit(:name, :email, :organziation_id)
+      params.require(:data).permit!
     end
 end
