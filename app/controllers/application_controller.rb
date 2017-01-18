@@ -1,6 +1,6 @@
 class ApplicationController < ActionController::API
   before_action :set_headers
-
+  before_action :check_token, except: [:login]
 
   def login
     user = User.find_by(email: params[:email])
@@ -16,6 +16,12 @@ class ApplicationController < ActionController::API
 
   def set_headers
     response.headers["Access-Control-Allow-Origin"] = "*"
+  end
+
+  def check_token
+    return if request.headers["HTTP_USER_ID"].present?
+
+    return render json: {  message: "Invalid access", status: 422 }
   end
 
   def jira_options
