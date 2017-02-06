@@ -69,6 +69,7 @@ class StoriesController < ApplicationController
   # POST /stories
   def create
     fetch_from_jira = story_params[:attributes].delete(:fetch_from_jira)
+    story_params[:attributes].delete(:reset)
 
     if fetch_from_jira
       get_story_from_jira(story_params[:attributes][:story_no])
